@@ -1,0 +1,163 @@
+<%- include('topbar.ejs') %>
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- Page Heading -->
+            <h1 class="h3 mb-4 text-gray-800 car_details_header">Car Details</h1>
+
+            <div class="card mb-12">
+                <div class="card-header"></div>
+                <div class="card-body">
+                    <form id="update_car_details">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="plate_no">Plate No</label>
+                                <input type="text" class="form-control" id="plate_no" name="plate_no" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="model">Model</label>
+                                <input type="text" class="form-control" id="model" name="car_models" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+
+            <br><br>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <ul class="list-inline ">
+                        <li class="list-inline-item float-left">
+                            <h6 class="m-0 font-weight-bold text-primary">Renewal Date</h6>
+                        </li>
+                        <li class="list-inline-item float-right">
+                            <a title="Renew" class="btn btn-success open_test_modal_btn renew_btn" id="renew_btn"
+                                id="add_bank_link">Renew</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Renew Date</th>
+                                    <th>Insurance Exp Date</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Renew Date</th>
+                                    <th>Insurance Exp Date</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+
+    </div>
+    <!-- End of Main Content -->
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="js/demo/datatables-demo.js"></script>
+
+    </body>
+
+    </html>
+
+    <script>
+        var car_details = <%- JSON.stringify(car_details) %>
+            console.log(car_details)
+
+        $('#renew_btn').attr("href", "/renew_date?customer_id=" + car_details.customer_id._id + '&car_id=' + car_details._id)
+
+        $('.car_details_header').text(car_details.customer_id.customer_name + ' - ' + car_details.plate_no)
+
+        $("input[name=plate_no]").val(car_details.plate_no)
+        $("input[name=car_models]").val(car_details.car_models)
+
+        for (i in car_details.renew_date) {
+            var renew_date = dateFormat_not_time(car_details.renew_date[i].renew_date) || "-"
+            var expire_date = dateFormat_not_time(car_details.renew_date[i].expire_date) || "-"
+
+            $('#dataTable tbody').append('<tr><td>' + renew_date + '</td><td>' + expire_date + '</td></tr>');
+        }
+
+        $("#update_car_details").submit(function (e) {
+            //prevent Default functionality
+            e.preventDefault();
+
+            var data = {
+                plate_no: $("input[name=plate_no]").val(),
+                car_models: $("input[name=car_models]").val(),
+                car_id: car_details._id,
+            }
+
+            console.log(data)
+            // return false
+            //do your own request an handle the results
+            $.ajax({
+                url: "/edit_car_api",
+                contentType: "application/json",
+                type: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function (data) {
+                    alert(data.message)
+
+                    if (data.result = "success") {
+                        window.location = ""
+                    }
+                },
+                error: function (data) {
+                    alert(data.message)
+                }
+            });
+        });
+
+        function dateFormat_not_time(date) {
+            formatted_date = "-"
+            if (date != null && date != undefined && date != "-") {
+                formatted_date = new Date(date);
+                var month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var day = formatted_date.getDate();
+                var month_index = formatted_date.getMonth();
+                var year = new String(formatted_date.getFullYear()).slice(-2);
+                formatted_date = day + '-' + month[month_index] + '-' + year;
+            }
+
+            return formatted_date;
+        }
+    </script>

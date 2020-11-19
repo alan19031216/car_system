@@ -1,0 +1,245 @@
+<%- include('topbar.ejs') %>
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- Page Heading -->
+            <h1 class="h3 mb-4 text-gray-800 customer_name_header">Customer</h1>
+
+            <div class="card mb-12">
+                <div class="card-header"></div>
+                <div class="card-body">
+                    <form id="update_customer_details">
+                        <div class="form-group">
+                            <label for="inputAddress">Full Name</label>
+                            <input type="text" class="form-control" id="inputAddress" placeholder="Customer Name"
+                                name="customer_name" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputCity">Phone No</label>
+                                <input type="number" class="form-control" id="inputCity"
+                                    placeholder="Customer Phone Number" name="mobile_number" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputIC">IC No</label>
+                                <input type="number" class="form-control" id="inputIC" placeholder="Customer IC Number"
+                                    name="ic_number" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+
+            <br><br>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <ul class="list-inline ">
+                        <li class="list-inline-item float-left">
+                            <h6 class="m-0 font-weight-bold text-primary">Registered Car</h6>
+                        </li>
+                        <li class="list-inline-item float-right">
+                            <a title="Add Bank" class="btn btn-success open_test_modal_btn" id="add_car_link">Add</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Plate No</th>
+                                    <th>Model</th>
+                                    <th>Insurance Exp Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Plate No</th>
+                                    <th>Model</th>
+                                    <th>Insurance Exp Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                <!-- <tr>
+                                    <td>Tiger Nixon</td>
+                                    <td>System Architect</td>
+                                    <td>System Architect</td>
+                                    <td>
+                                        <a href="/car_details" class="btn btn-primary btn-icon-split">
+                                            <span class="text">View</span>
+                                        </a>
+                                        </a>
+                                        <a href="/renew_date" class="btn btn-info btn-icon-split">
+                                            <span class="text">Renew</span>
+                                        </a>
+                                    </td>
+                                </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- End of Main Content -->
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="js/demo/datatables-demo.js"></script>
+
+    </body>
+
+    </html>
+
+    <script>
+        var customer_details = <%- JSON.stringify(customer_details) %>
+            console.log(customer_details)
+
+        $('.customer_name_header').text(customer_details.customer_name)
+
+        $("input[name=customer_name]").val(customer_details.customer_name)
+        $("input[name=mobile_number]").val(customer_details.mobile_number)
+        $("input[name=ic_number]").val(customer_details.ic_number)
+
+        $('#add_car_link').attr("href", "/add_car?customer_id=" + customer_details._id)
+
+        $("#update_customer_details").submit(function (e) {
+            //prevent Default functionality
+            e.preventDefault();
+
+            var data = {
+                customer_name: $("input[name=customer_name]").val(),
+                mobile_number: $("input[name=mobile_number]").val(),
+                ic_number: $("input[name=ic_number]").val(),
+                customer_id: customer_details._id,
+            }
+
+            console.log(data)
+            // return false
+            //do your own request an handle the results
+            $.ajax({
+                url: "/edit_customer_api",
+                contentType: "application/json",
+                type: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function (data) {
+                    alert(data.message)
+
+                    if (data.result = "success") {
+                        window.location = ""
+                    }
+                },
+                error: function (data) {
+                    alert(data.message)
+                }
+            });
+        });
+
+        registered_car = customer_details.registered_car
+        if (registered_car.length > 0) {
+            var count = 0;
+            for (i in registered_car) {
+
+                var plate_no = '<a href="/car_details?car_id=' + registered_car[i]._id + '"><span class="text">' + registered_car[i].plate_no + '</span></a>'
+                var car_models = registered_car[i].car_models || "-"
+                var latest_expiry_date = dateFormat_not_time(registered_car[i].latest_expiry_date) || "-"
+                var renew_btn = '<a href="/renew_date?car_id=' + registered_car[i]._id + '&customer_id=' + customer_details._id + '" class="btn btn-info btn-icon-split"><span class="text">Renew</span></a>'
+                var delete_btn = '<button class="btn btn-danger btn-icon-split delete_car_btn" data-car_id="' + registered_car[i]._id + '"><span class="text">Delete</span></button>'
+
+                $('#dataTable tbody').append('<tr><td>' + plate_no + '</td><td>' + car_models + '</td><td>' + latest_expiry_date + '</td><td>' + renew_btn + ' ' + delete_btn + '</td></tr>');
+            }
+        }
+
+        $(document).on('click', '.delete_car_btn', function (e) {
+            var r = confirm("Are you sure want to delete!");
+            if (r == true) {
+                $('#loader').show();
+                e.preventDefault();
+                e.stopPropagation();
+                var car_id = $(this).data(car_id);
+                console.log(car_id);
+                // return false;
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/delete_car_api",
+                    data: JSON.stringify(car_id),
+                    dataType: 'json',
+                    success: function (result) {
+                        console.log(result);
+                        if (result.result = "success") {
+                            alert(result.message);
+                            window.location = '';
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error: ', error);
+                        window.location = '';
+                    }
+                });
+            }
+        });
+
+        function dateFormat_not_time(date) {
+            formatted_date = "-"
+            if (date != null && date != undefined && date != "-") {
+                formatted_date = new Date(date);
+                var month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var day = formatted_date.getDate();
+                var month_index = formatted_date.getMonth();
+                var year = new String(formatted_date.getFullYear()).slice(-2);
+                formatted_date = day + '-' + month[month_index] + '-' + year;
+            }
+
+            return formatted_date;
+        }
+    </script>

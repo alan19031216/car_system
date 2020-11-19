@@ -1,0 +1,82 @@
+<%- include('topbar.ejs') %>
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- Page Heading -->
+            <h1 class="h3 mb-4 text-gray-800">Add Customer</h1>
+
+            <div class="card mb-12">
+                <div class="card-header"></div>
+                <div class="card-body">
+                    <form id="add_customer">
+                        <div class="form-group">
+                            <label for="inputAddress">Full Name</label>
+                            <input type="text" class="form-control" id="inputAddress" placeholder="Customer Name"
+                                name="customer_name" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputCity">Mobile No</label>
+                                <input type="number" class="form-control" id="inputCity"
+                                    placeholder="Customer Mobile Number" name="mobile_number" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputIC">IC No</label>
+                                <input type="number" class="form-control" id="inputIC" placeholder="Customer IC Number"
+                                    name="ic_number" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- End of Main Content -->
+    <%- include('footer.ejs') %>
+
+    <script>
+        $("#add_customer").submit(function (e) {
+            e.preventDefault();
+
+            var data = {
+                customer_name: $("input[name=customer_name]").val(),
+                mobile_number: $("input[name=mobile_number]").val(),
+                ic_number: $("input[name=ic_number]").val(),
+            }
+
+            console.log(data)
+            // return false
+            //do your own request an handle the results
+            $.ajax({
+                url: "/add_customer_api",
+                contentType: "application/json",
+                type: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function (data) {
+                    // console.log(data)
+                    alert(data.message)
+
+                    if (data.result = "success") {
+                        window.location = "/customer_details?customer_id=" + data.customer_id
+                    }
+                },
+                error: function (data) {
+                    alert(data.message)
+                }
+            });
+        });
+    </script>

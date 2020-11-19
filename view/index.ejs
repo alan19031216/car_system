@@ -1,0 +1,193 @@
+<%- include('topbar.ejs') %>
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+  <!-- Main Content -->
+  <div id="content">
+
+    <!-- Topbar -->
+    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+    </nav>
+    <!-- End of Topbar -->
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+      <!-- Page Heading -->
+      <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+            class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> -->
+      </div>
+
+      <!-- Content Row -->
+      <div class="row">
+
+        <!-- Customer Card Example -->
+        <div class="col-xl-4 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Customer</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800 customer_tags"></div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-users fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-4 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Registered Car</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800 registered_car_tags">$215,000</div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-car fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-4 col-md-6 mb-4">
+          <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col r-m2">
+                  <a href="/expired_car">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Expired Car</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800 expire_car_tags">$215,000</div>
+                  </a>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Row -->
+
+      <div class="row">
+
+        <!-- Area Chart -->
+        <div class="col-xl-12 col-lg-12">
+          <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary">Expiry Car Within One Month</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Plate No</th>
+                      <th>Model</th>
+                      <th>Insurance Exp Date</th>
+                      <th>Customer Name</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th>Plate No</th>
+                      <th>Model</th>
+                      <th>Insurance Exp Date</th>
+                      <th>Customer Name</th>
+                      <th>Action</th>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.container-fluid -->
+
+  </div>
+  <!-- End of Main Content -->
+
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.min.js"></script>
+
+  <!-- Page level plugins -->
+  <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+  <!-- Page level custom scripts -->
+  <script src="js/demo/datatables-demo.js"></script>
+
+  </body>
+
+  </html>
+
+  <script>
+    var customer_list = <%- JSON.stringify(customer_list) %>;
+    var car_list = <%- JSON.stringify(car_list) %>;
+    var car_expire = <%- JSON.stringify(car_expire) %>;
+    var car_expire_within_one_moth = <%- JSON.stringify(car_expire_within_one_moth) %>;
+    console.log(car_expire_within_one_moth)
+
+    $('.customer_tags').text(customer_list)
+    $('.registered_car_tags').text(car_list)
+    $('.expire_car_tags').text(car_expire)
+
+    if (car_expire_within_one_moth.length > 0) {
+        var count = 0;
+        for (i in car_expire_within_one_moth) {
+            var plate_no = '<a href="/car_details?car_id=' + car_expire_within_one_moth[i]._id + '"> <span class="text">' + car_expire_within_one_moth[i].plate_no + '</span> </a>'
+            var car_models = car_expire_within_one_moth[i].car_models
+            var latest_expiry_date = dateFormat_not_time(car_expire_within_one_moth[i].latest_expiry_date) || '-'
+            var customer_name = "-"
+            if (car_expire_within_one_moth[i].customer_id != null) {
+                customer_name = '<a href="/customer_details?customer_id=' + car_expire_within_one_moth[i].customer_id._id + '"> <span class="text">' + car_expire_within_one_moth[i].customer_id.customer_name + '</span> </a>'
+            }
+
+            var renew_btn = '<a href="/renew_date?car_id=' + car_expire_within_one_moth[i]._id + '&customer_id=' + car_expire_within_one_moth[i].customer_id._id + '" class="btn btn-info btn-icon-split"><span class="text">Renew</span></a>'
+
+            $('#dataTable tbody').append('<tr><td>' + plate_no + '</td><td>' + car_models + '</td><td>' + latest_expiry_date + '</td><td>' + customer_name + '</td><td>' + renew_btn + '</td></tr>');
+        }
+    }
+
+    function dateFormat_not_time(date) {
+        formatted_date = "-"
+        if (date != null && date != undefined && date != "-") {
+            formatted_date = new Date(date);
+            var month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var day = formatted_date.getDate();
+            var month_index = formatted_date.getMonth();
+            var year = new String(formatted_date.getFullYear()).slice(-2);
+            formatted_date = day + '-' + month[month_index] + '-' + year;
+        }
+
+        return formatted_date;
+    }
+  </script>

@@ -1,0 +1,170 @@
+<%- include('topbar.ejs') %>
+
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- Page Heading -->
+            <h1 class="h3 mb-2 text-gray-800">Customer</h1>
+
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <ul class="list-inline float-right">
+                        <li class="list-inline-item">
+                            <a title="Add Bank" class="btn btn-success open_test_modal_btn" href="/add_customer"
+                                id="add_bank_link">Add</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Mobile No</th>
+                                    <th>IC No</th>
+                                    <th>Registered Car</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Mobile No</th>
+                                    <th>IC No</th>
+                                    <th>Registered Car</th>
+                                    <th>Action</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                <!-- <tr>
+                                    <td>Lael Greer</td>
+                                    <td>Systems Administrator</td>
+                                    <td>London</td>
+                                    <td>London</td>
+                                    <td>
+                                        <a href="/customer_details" class="btn btn-primary btn-icon-split">
+                                            <span class="text">View</span>
+                                        </a>
+                                        <a href="/add_car" class="btn btn-info btn-icon-split">
+                                            <span class="text">Add Car</span>
+                                        </a>
+                                    </td>
+                                </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container-fluid -->
+
+    </div>
+    <!-- End of Main Content -->
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+                <span>Copyright &copy; Your Website 2020</span>
+            </div>
+        </div>
+    </footer>
+    <!-- End of Footer -->
+
+</div>
+<!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Bootstrap core JavaScript-->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="js/sb-admin-2.min.js"></script>
+
+<!-- Page level plugins -->
+<script src="vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+<!-- Page level custom scripts -->
+<script src="js/demo/datatables-demo.js"></script>
+
+</body>
+
+</html>
+
+<script>
+    var customer_details = <%- JSON.stringify(customer_details) %>;
+    console.log(customer_details)
+
+    if (customer_details.length > 0) {
+        var count = 0;
+        for (i in customer_details) {
+            var mobile_number = customer_details[i].mobile_number
+            var ic_number = customer_details[i].ic_number
+            var registered_car = customer_details[i].registered_car.length
+
+            var customer_name = '<a href="/customer_details?customer_id=' + customer_details[i]._id + '"> <span class="text">' + customer_details[i].customer_name + '</span> </a>'
+            var add_car_btn = '<a href="/add_car?customer_id=' + customer_details[i]._id + '" class="btn btn-info btn-icon-split"> <span class="text">Add Car</span> </a>'
+            var delete_btn = '<button class="btn btn-danger btn-icon-split delete_customer_btn" data-customer_id="' + customer_details[i]._id + '"><span class="text">Delete</span></button>'
+
+            $('#dataTable tbody').append('<tr><td>' + customer_name + '</td><td>' + mobile_number + '</td><td>' + ic_number + '</td><td>' + registered_car + '</td><td>' + add_car_btn + ' ' + delete_btn + '</td></tr>');
+        }
+    }
+
+    $(document).on('click', '.delete_customer_btn', function (e) {
+        var r = confirm("Are you sure want to delete!");
+        if (r == true) {
+            $('#loader').show();
+            e.preventDefault();
+            e.stopPropagation();
+            var customer_id = $(this).data(customer_id);
+            console.log(customer_id);
+            // return false;
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/delete_customer_api",
+                data: JSON.stringify(customer_id),
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                    if (result.result = "success") {
+                        alert(result.message);
+                        window.location = '';
+                    }
+                },
+                error: function (error) {
+                    console.log('Error: ', error);
+                    window.location = '';
+                }
+            });
+        }
+    });
+
+</script>

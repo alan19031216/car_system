@@ -1,0 +1,82 @@
+<%- include('topbar.ejs') %>
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- Page Heading -->
+            <h1 class="h3 mb-4 text-gray-800">Renew</h1>
+
+            <div class="card mb-12">
+                <div class="card-header"></div>
+                <div class="card-body">
+                    <form id="renew_date_form">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputCity">Renew Date</label>
+                                <input type="date" class="form-control" id="inputCity" name="renew_date" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputIC">Expire Date</label>
+                                <input type="date" class="form-control" id="inputIC" name="expire_date" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- End of Main Content -->
+    <%- include('footer.ejs') %>
+
+    <script>
+        var customer_id = getUrlVars()['customer_id'];
+        var car_id = getUrlVars()['car_id'];
+        console.log(customer_id)
+        console.log(car_id)
+
+        $("#renew_date_form").submit(function (e) {
+            //prevent Default functionality
+            e.preventDefault();
+
+            var data = {
+                renew_date: $("input[name=renew_date]").val(),
+                expire_date: $("input[name=expire_date]").val(),
+                customer_id: customer_id,
+                car_id: car_id
+            }
+
+            console.log(data)
+            // return false
+            //do your own request an handle the results
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/renew_date_api",
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                    if (result.result = "success") {
+                        alert(result.message);
+                        window.location = '/car_details?car_id=' + car_id;
+                    }
+                },
+                error: function (error) {
+                    console.log('Error: ', error);
+                    window.location = '';
+                }
+            });
+        });
+    </script>
