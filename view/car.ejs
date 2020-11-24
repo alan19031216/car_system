@@ -1,5 +1,6 @@
 <%- include('topbar.ejs') %>
-
+<!-- daterange picker -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
 <!-- Content Wrapper -->
 <div id="content-wrapper" class="d-flex flex-column">
@@ -24,6 +25,21 @@
                     <h6 class="m-0 font-weight-bold text-primary"></h6>
                 </div>
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="daterange_start" autocomplete="off"
+                                    placeholder="From">
+                                <input type="text" class="form-control" name="daterange_end" autocomplete="off"
+                                    placeholder="To">
+                                <input type="hidden" name="start_date">
+                                <input type="hidden" name="end_date">
+                                <div class="input-group-append">
+                                    <button class="btn btn-success search_transaction_btn" type="button">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
@@ -113,32 +129,142 @@
 <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
 <!-- Page level custom scripts -->
-<script src="js/demo/datatables-demo.js"></script>
+<!-- <script src="js/demo/datatables-demo.js"></script> -->
 
 </body>
 
 </html>
 
+<!-- daterange picker -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 <script>
     var car_list = <%- JSON.stringify(car_list) %>;
     console.log(car_list)
 
-    if (car_list.length > 0) {
-        var count = 0;
-        for (i in car_list) {
-            var plate_no = '<a href="/car_details?car_id=' + car_list[i]._id + '"> <span class="text">' + car_list[i].plate_no + '</span> </a>'
-            var car_models = car_list[i].car_models
-            var latest_expiry_date = dateFormat_not_time(car_list[i].latest_expiry_date) || '-'
-            var customer_name = "-"
-            if (car_list[i].customer_id != null) {
-                customer_name = '<a href="/customer_details?customer_id=' + car_list[i].customer_id._id + '"> <span class="text">' + car_list[i].customer_id.customer_name + '</span> </a>'
+    var init_date = moment(new Date());
+    init_date = init_date.format('2017-01-01 00:00:00')
+    var now = moment(new Date());
+    var aMinDate = new Date()
+
+    $('input[name="daterange_start"]').daterangepicker({
+        autoUpdateInput: false,
+        autoApply: true,
+        singleDatePicker: true,
+        showDropdowns: true,
+        locale: {
+            cancelLabel: 'Clear',
+            format: "DD-MMM-YYYY"
+        }
+    });
+
+    $('input[name="daterange_start"]').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD-MMM-YYYY'));
+        $('input[name="start_date"]').val(picker.startDate.format('YYYY-MM-DD 00:00:00'));
+
+        aMinDate = new Date(Date.parse(picker.startDate.format('YYYY-MM-DD 00:00:00')));
+        $('input[name="daterange_end"]').val('')
+        $('input[name="end_date"]').val('')
+    });
+
+    $('input[name="daterange_end"]').daterangepicker({
+        autoUpdateInput: false,
+        autoApply: true,
+        singleDatePicker: true,
+        showDropdowns: true,
+        locale: {
+            cancelLabel: 'Clear',
+            format: "DD-MMM-YYYY"
+        }
+    });
+
+    $('input[name="daterange_end"]').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('DD-MMM-YYYY'));
+        $(this).val(picker.startDate.format('DD-MMM-YYYY'));
+        $('input[name="end_date"]').val(picker.startDate.format('YYYY-MM-DD 23:59:59'));
+    });
+
+    updateTable(updateJSON(car_list, '', ''));
+
+    car_JSON = new Array()
+    function updateJSON(car_list, start_date, end_date) {
+        car_JSON = new Array();
+        index = 0;
+
+        for (var i = 0; i < car_list.length; i++) {
+            var db_date = dbDate(car_list[i].latest_expiry_date) || "-";
+
+            if (start_date != "" && end_date != "") {
+                start_date = dbDate(start_date);
+                end_date = dbDate(end_date);
             }
 
-            var renew_btn = '<a href="/renew_date?car_id=' + car_list[i]._id + '&customer_id=' + car_list[i].customer_id._id + '" class="btn btn-info btn-icon-split"><span class="text">Renew</span></a>'
+            if ((start_date == '' && end_date == '') || (start_date <= db_date && db_date <= end_date)) {
+                var plate_no = '<a href="/car_details?car_id=' + car_list[i]._id + '"> <span class="text">' + car_list[i].plate_no + '</span> </a>'
+                var car_models = car_list[i].car_models
+                var latest_expiry_date = dateFormat_not_time(car_list[i].latest_expiry_date) || '-'
+                var customer_name = "-"
+                if (car_list[i].customer_id != null) {
+                    customer_name = '<a href="/customer_details?customer_id=' + car_list[i].customer_id._id + '"> <span class="text">' + car_list[i].customer_id.customer_name + '</span> </a>'
+                }
 
-            $('#dataTable tbody').append('<tr><td>' + plate_no + '</td><td>' + car_models + '</td><td>' + latest_expiry_date + '</td><td>' + customer_name + '</td><td>' + renew_btn + '</td></tr>');
+                var renew_btn = '<a href="/renew_date?car_id=' + car_list[i]._id + '&customer_id=' + car_list[i].customer_id._id + '" class="btn btn-info btn-icon-split"><span class="text">Renew</span></a>'
+
+                car_obj_row = {
+                    "plate_no": plate_no,
+                    "car_models": car_models,
+                    "latest_expiry_date": latest_expiry_date,
+                    "customer_name": customer_name,
+                    "renew_btn": renew_btn,
+                };
+
+                car_JSON[index++] = car_obj_row;
+            }
         }
+
+        return car_JSON
     }
+
+    function updateTable(car_JSON) {
+        if ($.fn.dataTable.isDataTable('#dataTable')) {
+            $('#dataTable').DataTable().destroy();
+        }
+
+        $('#dataTable').DataTable({
+            data: car_JSON,
+            columns: [
+                { data: "plate_no" },
+                { data: "car_models" },
+                { data: "latest_expiry_date" },
+                { data: "customer_name" },
+                { data: "renew_btn" }
+            ],
+            "order": [[2, "desc"]],
+        });
+    }
+
+    $('.search_transaction_btn').click(function () {
+        start_date = $('input[name="start_date"]').val();
+        end_date = $('input[name="end_date"]').val();
+
+        if (start_date == "" && end_date == "") {
+            start_date = ""
+            end_date = ""
+        }
+        else if (start_date != "" && end_date == "") {
+            end_date = now
+        }
+        else if (start_date == "" && end_date != "") {
+            start_date = init_date
+        }
+        else if (new Date(start_date) > new Date(end_date)) {
+            alert('Invalid Date.')
+            return false
+        }
+
+        updateTable(updateJSON(car_list, start_date, end_date));
+    });
 
     function dateFormat_not_time(date) {
         formatted_date = "-"
@@ -152,5 +278,10 @@
         }
 
         return formatted_date;
+    }
+
+    function dbDate(date) {
+        formatted_date = new Date(date);
+        return +formatted_date;
     }
 </script>

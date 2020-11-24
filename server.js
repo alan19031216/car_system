@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 
     var date = new Date();
     var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    var lastDay = new Date(date.getFullYear(), date.getMonth() + 2, 0);
     lastDay.setHours(23)
     lastDay.setMinutes(59)
 
@@ -269,6 +269,7 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
     app.listen(8002);
+    // app.listen(1001);
     app.listen(port, function () {
         console.log("Server running ", port);
     });
