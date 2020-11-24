@@ -268,7 +268,7 @@ mongoose.connect(db_url, { useNewUrlParser: true });
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-    app.listen(8002);
+    app.listen(8001);
     // app.listen(1001);
     app.listen(port, function () {
         console.log("Server running ", port);

@@ -143,7 +143,7 @@
   <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
   <!-- Page level custom scripts -->
-  <script src="js/demo/datatables-demo.js"></script>
+  <!-- <script src="js/demo/datatables-demo.js"></script> -->
 
   </body>
 
@@ -176,6 +176,11 @@
             $('#dataTable tbody').append('<tr><td>' + plate_no + '</td><td>' + car_models + '</td><td>' + latest_expiry_date + '</td><td>' + customer_name + '</td><td>' + renew_btn + '</td></tr>');
         }
     }
+
+    $('#dataTable').DataTable({
+          search: true,
+          "order": [[2, "desc"]],
+      });
 
     function dateFormat_not_time(date) {
         formatted_date = "-"
